@@ -1,0 +1,124 @@
+
+
+#   return model, loss_history
+
+# def save_figure(X, name, histo = False):
+#   if (histo):
+#     plt.plot(X)
+#     plt.savefig(name)
+#     plt.clf()
+#   else:
+#     fig, axs = plt.subplots(1, 2,figsize=(10,10))
+#     a = axs[0].imshow(X[0,:,:,0]); plt.sca(axs[0]); plt.yticks([]); plt.xticks([])
+#     fig.colorbar(a, ax=axs[0],fraction=0.046)
+#     a = axs[1].imshow(X[0,:,:,1])
+#     fig.colorbar(a, ax=axs[1],fraction=0.046); plt.sca(axs[1]); plt.yticks([]); plt.xticks([])
+#     fig.savefig(name)
+#     fig.clf()
+
+
+
+# def call_back(model, epoch, generator = validation_generator, loss_func = None, results_folder = None, random=False, ext=".png", loss_hist=None, ssim_hist_abs=None, ssim_hist_phase=None):
+#   if (random):
+#     l = len(generator)
+#     idx = np.random.choice(l)
+#   else:
+#     idx=2
+
+#   X_f, X_real = generator.__getitem__(idx)
+#   predictions = model(X_f)
+
+#   save_figure(X_real, os.path.join(results_folder, "X_real"+ ext))
+#   save_figure(predictions, os.path.join(results_folder, "predictions"+ ext))
+
+#   loss = loss_f(X_real, predictions)
+#   ssim_abs = tf.image.ssim(X_real[:,:,:,0], predictions[:,:,:,0], max_val=1)
+#   ssim_phase = tf.image.ssim(X_real[:,:,:,1], predictions[:,:,:,1], max_val=10)
+
+
+
+
+#   loss_hist.append(loss)
+#   ssim_hist_abs.append(ssim_abs)
+#   ssim_hist_phase.append(ssim_phase)
+
+#   save_figure(loss_hist, os.path.join(results_folder, "loss_val_hist"+ ext), histo = True)
+#   save_figure(ssim_hist_abs, os.path.join(results_folder, "ssim_hist_abs"+ ext), histo = True)
+#   save_figure(ssim_hist_phase, os.path.join(results_folder, "ssim_hist_phase"+ ext), histo = True)
+
+#   model.save_weights(os.path.join(results_folder, "last_weights.h5"))
+
+  
+#   return loss_hist, ssim_hist_abs, ssim_hist_phase
+
+
+
+
+
+# def train_step(z_real, z2, num_batch, optimizer, loss_f):
+#   with tf.GradientTape() as tape:
+#     predictions = model(z2, training=True)
+
+#     loss_value = loss_f(z_real, predictions)
+#     print("\r BATCH NO: ", num_batch, " -  loss value: ", loss_value.numpy(), end='')
+    
+  
+#   grads = tape.gradient(loss_value, model.trainable_variables)
+  
+#   optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+#   return loss_value.numpy()
+
+
+
+# def train(model, epochs, optimizer, loss_f, train_generator, validation_generator,results_folder = None, load_weights=True):
+#   loss_history = []
+#   loss_hist, ssim_hist_abs, ssim_hist_phase = [], [], []
+
+      
+#   if (load_weights):
+#     model.load_weights(os.path.join(results_folder, "last_weights.h5"))
+
+
+#   for epoch in range(epochs):
+#     print("Epoch:",epoch)
+
+    
+#     for num_batch in range(len(train_generator)):
+#       z_real, z2 = train_generator.__getitem__(num_batch)
+      
+#       loss_history = train_step(z_real, z2, num_batch, optimizer, loss_f)
+
+#     loss_hist, ssim_hist_abs, ssim_hist_phase = call_back(model, epoch, generator = validation_generator, loss_func=loss_f, results_folder=results_folder, loss_hist = loss_hist, ssim_hist_abs = ssim_hist_abs,ssim_hist_phase = ssim_hist_phase)
+
+#     print(" - FIN Epoch")
+   
+#   return model, loss_history
+
+
+
+# epochs = 40
+# optimizer = tf.keras.optimizers.SGD()
+# loss_f = tf.keras.losses.MeanSquaredError()
+# model = get_model(n_power=50, gene = True, unrolled=False)
+
+# model.save_weights(os.path.join(RESULTS_DIR, "initial_weights.h5"))
+# model, loss_history = train(model, epochs, optimizer, loss_f, train_generator = test_generator, validation_generator = validation_generator, results_folder=RESULTS_DIR, load_weights=True)
+
+# X_Test = validation_generator.get_random_image()
+
+# fig, axs = plt.subplots(1, 2,figsize=(10,10))
+# a = axs[0].imshow(X_Test[0,:,:,0]); plt.sca(axs[0]); plt.yticks([]); plt.xticks([])
+# fig.colorbar(a, ax=axs[0],fraction=0.046)
+# a = axs[1].imshow(X_Test[0,:,:,1])
+# fig.colorbar(a, ax=axs[1],fraction=0.046); plt.sca(axs[1]); plt.yticks([]); plt.xticks([])
+# fig.show()
+
+# X_Test = np.repeat(X_Test, 32, 0)
+# X_pred = model.predict(X_Test)
+# fig, axs = plt.subplots(1, 2,figsize=(10,10))
+# a = axs[0].imshow(X_pred[0,:,:,0]); plt.sca(axs[0]); plt.yticks([]); plt.xticks([])
+# fig.colorbar(a, ax=axs[0],fraction=0.046)
+# a = axs[1].imshow(X_pred[0,:,:,1])
+# fig.colorbar(a, ax=axs[1],fraction=0.046); plt.sca(axs[1]); plt.yticks([]); plt.xticks([])
+# fig.show()

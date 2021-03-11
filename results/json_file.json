@@ -1,0 +1,12 @@
+{
+    "images": {
+        "Image_loss": "../results/Noneinit_False_loss_hist.png"
+    },
+    "vars": {
+        "epoch": 74,
+        "loss": 0.42539629340171814,
+        "val_loss": 0.41219955682754517
+    },
+    "errors": [],
+    "var_activity_bot": "epoch"
+}
